@@ -2,294 +2,634 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Support Assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
     :root {
-        --bg-deep: #0b0f1a;
-        --surface: #141a2a;
-        --surface-2: #1c2336;
-        --border: #262e45;
-        --accent-1: #6366f1;
-        --accent-2: #a855f7;
-        --text-light: #e8eaf0;
-        --text-muted: #8b92a8;
-        --positive: #34d399;
-        --neutral: #8b92a8;
-        --negative: #fbbf24;
-        --frustrated: #f87171;
+        --bg: #f0f0fa;
+        --white: #ffffff;
+        --purple-deep: #4f46e5;
+        --purple-mid: #6366f1;
+        --purple-light: #ede9fe;
+        --purple-pale: #f5f3ff;
+        --user-bubble: #6366f1;
+        --bot-bubble: #ffffff;
+        --text-dark: #1e1b4b;
+        --text-mid: #4b5563;
+        --text-muted: #9ca3af;
+        --border: #e5e7eb;
+        --green: #22c55e;
+        --positive: #22c55e;
+        --neutral: #9ca3af;
+        --negative: #f59e0b;
+        --frustrated: #ef4444;
+        --shadow-lg: 0 8px 40px rgba(99,102,241,0.18);
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
         font-family: 'Inter', sans-serif;
-        margin: 0;
+        background: var(--bg);
+        min-height: 100vh;
     }
 
-    #chat-button {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        height: 60px;
-        width: 60px;
-        border-radius: 50%;
-        border: none;
-        cursor: pointer;
-        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    /* ── Landing page ── */
+    .landing {
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45);
-        animation: pulse 2.5s infinite;
-        transition: transform 0.2s ease;
-        z-index: 1000;
+        padding: 40px 24px;
     }
 
-    #chat-button:hover { transform: scale(1.06); }
+    .landing-inner {
+        max-width: 520px;
+        width: 100%;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: white;
+        border: 1px solid #ddd6fe;
+        color: var(--purple-mid);
+        font-size: 12.5px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 20px;
+        margin-bottom: 28px;
+        box-shadow: 0 1px 6px rgba(99,102,241,0.10);
+    }
+
+    .landing h1 {
+        font-size: 42px;
+        font-weight: 800;
+        color: var(--text-dark);
+        line-height: 1.15;
+        margin-bottom: 20px;
+    }
+
+    .landing h1 span {
+        color: var(--purple-mid);
+        position: relative;
+        display: inline-block;
+    }
+
+    .landing h1 span::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--purple-mid);
+        border-radius: 2px;
+        opacity: 0.3;
+    }
+
+    .landing p {
+        font-size: 16px;
+        color: var(--text-mid);
+        line-height: 1.65;
+        margin-bottom: 36px;
+        max-width: 420px;
+    }
+
+    .feature-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-bottom: 40px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        padding: 18px 14px;
+        text-align: center;
+        box-shadow: 0 2px 12px rgba(99,102,241,0.08);
+        border: 1px solid #ede9fe;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(99,102,241,0.14);
+    }
+
+    .card-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin: 0 auto 10px;
+    }
+
+    .card-icon.purple { background: var(--purple-light); }
+    .card-icon.green  { background: #dcfce7; }
+    .card-icon.blue   { background: #dbeafe; }
+
+    .card h3 {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+
+    .card p {
+        font-size: 11px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--purple-deep);
+        color: white;
+        font-family: 'Inter', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 13px 26px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(79,70,229,0.35);
+        transition: background 0.15s, transform 0.15s;
+    }
+
+    .cta-btn:hover {
+        background: var(--purple-mid);
+        transform: translateY(-1px);
+    }
+
+    /* ── Floating chat button ── */
+    #chat-button {
+        position: fixed;
+        bottom: 28px;
+        right: 28px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        background: var(--purple-deep);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(79,70,229,0.40);
+        transition: transform 0.2s, box-shadow 0.2s;
+        z-index: 100;
+        animation: pulse 2.5s infinite;
+    }
 
     @keyframes pulse {
-        0%   { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45); }
-        50%  { box-shadow: 0 4px 28px rgba(168, 85, 247, 0.65); }
-        100% { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.45); }
+        0%   { box-shadow: 0 4px 20px rgba(79,70,229,0.40); }
+        50%  { box-shadow: 0 4px 28px rgba(99,102,241,0.65); }
+        100% { box-shadow: 0 4px 20px rgba(79,70,229,0.40); }
     }
 
-    #chat-container {
+    #chat-button:hover { transform: scale(1.07); }
+
+    /* ── Chat window ── */
+    #chat-window {
         display: none;
-        flex-direction: column;
         position: fixed;
-        bottom: 96px;
-        right: 24px;
-        width: 340px;
-        height: 460px;
-        background: var(--bg-deep);
-        border: 1px solid var(--border);
-        border-radius: 18px;
+        bottom: 100px;
+        right: 28px;
+        width: 380px;
+        height: 560px;
+        background: var(--white);
+        border-radius: 20px;
+        box-shadow: var(--shadow-lg);
+        flex-direction: column;
         overflow: hidden;
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        animation: slideUp 0.25s ease;
-        z-index: 1000;
+        z-index: 100;
+        animation: slideUp 0.22s ease;
     }
 
     @keyframes slideUp {
-        from { opacity: 0; transform: translateY(16px); }
+        from { opacity: 0; transform: translateY(18px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ── Header ── */
     #chat-header {
-        background: linear-gradient(120deg, var(--accent-1), var(--accent-2));
-        padding: 14px 16px;
-        cursor: pointer;
+        background: var(--purple-deep);
+        padding: 14px 18px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         flex-shrink: 0;
     }
 
-    .status-dot {
-        width: 8px;
-        height: 8px;
+    .avatar-wrap { position: relative; flex-shrink: 0; }
+
+    .avatar {
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
-        background: var(--positive);
-        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
-        animation: dotPulse 2s infinite;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
     }
 
-    @keyframes dotPulse {
-        0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6); }
-        70%  { box-shadow: 0 0 0 6px rgba(52, 211, 153, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+    .online-dot {
+        position: absolute;
+        bottom: 1px;
+        right: 1px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--green);
+        border: 2px solid var(--purple-deep);
     }
 
-    .header-text { display: flex; flex-direction: column; }
-    .header-title { color: white; font-weight: 600; font-size: 14px; }
-    .header-subtitle { color: rgba(255,255,255,0.85); font-size: 11px; }
+    .header-info { flex-grow: 1; }
+    .header-name { color: white; font-weight: 600; font-size: 15px; }
+    .header-status { color: rgba(255,255,255,0.80); font-size: 12px; margin-top: 1px; }
 
+    .header-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: rgba(255,255,255,0.80);
+        font-size: 20px;
+        padding: 4px;
+        line-height: 1;
+        transition: color 0.15s;
+    }
+    .header-close:hover { color: white; }
+
+    /* ── Date divider ── */
+    .date-divider {
+        display: flex;
+        align-items: center;
+        padding: 10px 16px 4px;
+        flex-shrink: 0;
+    }
+    .date-divider span {
+        font-size: 11px;
+        color: var(--text-muted);
+        background: #f3f4f6;
+        padding: 3px 10px;
+        border-radius: 20px;
+        margin: 0 auto;
+    }
+
+    /* ── Chat box ── */
     #chat-box {
         flex-grow: 1;
         overflow-y: auto;
-        padding: 14px;
+        padding: 8px 16px 12px;
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 2px;
+        scroll-behavior: smooth;
     }
 
-    #chat-box::-webkit-scrollbar { width: 5px; }
-    #chat-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    #chat-box::-webkit-scrollbar { width: 4px; }
+    #chat-box::-webkit-scrollbar-thumb { background: #e0e0f0; border-radius: 4px; }
 
-    .msg-row {
+    /* ── Messages ── */
+    .msg-group {
         display: flex;
-        flex-direction: column;
-        max-width: 80%;
-        animation: fadeIn 0.25s ease;
-        margin-bottom: 8px;
+        gap: 8px;
+        margin-bottom: 10px;
+        animation: fadeIn 0.22s ease;
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(6px); }
+        from { opacity: 0; transform: translateY(5px); }
         to   { opacity: 1; transform: translateY(0); }
     }
 
-    .msg-row.user { align-self: flex-end; align-items: flex-end; }
-    .msg-row.bot { align-self: flex-start; align-items: flex-start; }
+    .msg-group.user { flex-direction: row-reverse; }
 
-    .bubble {
-        padding: 10px 13px;
-        font-size: 13.5px;
-        line-height: 1.45;
-        border-radius: 14px;
+    .bot-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--purple-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        flex-shrink: 0;
+        align-self: flex-end;
     }
 
-    .user .bubble {
-        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    .msg-content { display: flex; flex-direction: column; max-width: 72%; }
+    .msg-group.user .msg-content { align-items: flex-end; }
+
+    .bubble {
+        padding: 10px 14px;
+        border-radius: 18px;
+        font-size: 13.5px;
+        line-height: 1.5;
+    }
+
+    .msg-group.bot .bubble {
+        background: var(--bot-bubble);
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .msg-group.user .bubble {
+        background: var(--user-bubble);
         color: white;
         border-bottom-right-radius: 4px;
     }
 
-    .bot .bubble {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        color: var(--text-light);
-        border-bottom-left-radius: 4px;
+    .msg-time {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 4px;
+        padding: 0 2px;
     }
 
+    .msg-group.user .msg-time { text-align: right; }
+
     .tag-row {
-        margin-top: 4px;
+        margin-top: 3px;
         font-size: 10px;
         color: var(--text-muted);
         display: flex;
-        gap: 6px;
+        gap: 5px;
         align-items: center;
-        padding-left: 2px;
     }
 
-    .tag-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-    }
+    .tag-dot { width: 6px; height: 6px; border-radius: 50%; }
 
-    .typing-bubble {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        border-bottom-left-radius: 4px;
-        padding: 11px 14px;
-        display: inline-flex;
-        gap: 4px;
-        align-self: flex-start;
+    /* ── Typing ── */
+    .typing-group {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
         animation: fadeIn 0.2s ease;
     }
 
+    .typing-bubble {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        border-bottom-left-radius: 4px;
+        padding: 12px 16px;
+        display: inline-flex;
+        gap: 4px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
     .typing-dot {
-        width: 6px;
-        height: 6px;
+        width: 7px; height: 7px;
         border-radius: 50%;
-        background: var(--text-muted);
+        background: #c4b5fd;
         animation: bounce 1.2s infinite;
     }
     .typing-dot:nth-child(2) { animation-delay: 0.15s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.30s; }
 
     @keyframes bounce {
         0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
-        30% { transform: translateY(-4px); opacity: 1; }
+        30% { transform: translateY(-5px); opacity: 1; }
     }
 
-    #chat-input-container {
+    /* ── Quick replies ── */
+    #quick-replies {
+        padding: 8px 16px 4px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .quick-btn {
+        background: var(--purple-pale);
+        color: var(--purple-mid);
+        border: 1px solid #ddd6fe;
+        border-radius: 20px;
+        padding: 6px 13px;
+        font-size: 12px;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        white-space: nowrap;
+    }
+    .quick-btn:hover { background: var(--purple-mid); color: white; }
+
+    /* ── Input ── */
+    #chat-input-area {
+        padding: 10px 14px 14px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 12px;
-        border-top: 1px solid var(--border);
-        background: var(--bg-deep);
+        gap: 10px;
         flex-shrink: 0;
+        border-top: 1px solid var(--border);
     }
 
     #user-input {
         flex-grow: 1;
-        padding: 10px 14px;
-        border-radius: 20px;
-        border: 1px solid var(--border);
-        background: var(--surface-2);
-        color: var(--text-light);
+        padding: 10px 16px;
+        border-radius: 24px;
+        border: 1.5px solid var(--border);
+        background: #fafafa;
         font-family: 'Inter', sans-serif;
-        font-size: 13px;
+        font-size: 13.5px;
+        color: var(--text-dark);
         outline: none;
+        transition: border-color 0.15s;
     }
-
     #user-input::placeholder { color: var(--text-muted); }
-    #user-input:focus { border-color: var(--accent-1); }
+    #user-input:focus { border-color: var(--purple-mid); background: white; }
 
     #send-btn {
-        width: 36px;
-        height: 36px;
+        width: 38px; height: 38px;
         border-radius: 50%;
         border: none;
-        background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        background: var(--purple-deep);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        transition: opacity 0.15s ease;
+        transition: background 0.15s, transform 0.15s;
     }
+    #send-btn:hover { background: var(--purple-mid); transform: scale(1.05); }
 
-    #send-btn:hover { opacity: 0.85; }
+    .disclaimer {
+        text-align: center;
+        font-size: 10px;
+        color: var(--text-muted);
+        padding-bottom: 8px;
+        flex-shrink: 0;
+    }
 </style>
 </head>
 <body>
 
-<button id="chat-button" onclick="toggleChat()">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-    </svg>
-</button>
+<!-- ── Landing Page ── -->
+<div class="landing">
+    <div class="landing-inner">
+        <div class="badge">✨ AI-Powered. CRM-Aware. Always Here.</div>
 
-<div id="chat-container">
-    <div id="chat-header" onclick="toggleChat()">
-        <span class="status-dot"></span>
-        <div class="header-text">
-            <span class="header-title">Support Assistant</span>
-            <span class="header-subtitle">Typically replies instantly</span>
+        <h1>Your CRM Assistant<br>for <span>every</span> question</h1>
+
+        <p>Get instant answers, solve issues, and make the most of your CRM platform.
+        Powered by AI — available 24/7, no waiting, no tickets.</p>
+
+        <div class="feature-cards">
+            <div class="card">
+                <div class="card-icon purple">💬</div>
+                <h3>Instant Answers</h3>
+                <p>Get replies in seconds, anytime</p>
+            </div>
+            <div class="card">
+                <div class="card-icon green">🛡️</div>
+                <h3>Smart Routing</h3>
+                <p>Escalates to humans when needed</p>
+            </div>
+            <div class="card">
+                <div class="card-icon blue">⚡</div>
+                <h3>Always On</h3>
+                <p>24/7 support, no queues</p>
+            </div>
         </div>
-    </div>
-    <div id="chat-box"></div>
-    <div id="chat-input-container">
-        <input type="text" id="user-input" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendMessage()">
-        <button id="send-btn" onclick="sendMessage()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"></path>
-            </svg>
+
+        <button class="cta-btn" onclick="toggleChat()">
+            💬 Chat with Assistant
         </button>
     </div>
 </div>
 
+<!-- ── Floating Chat Button ── -->
+<button id="chat-button" onclick="toggleChat()">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+    </svg>
+</button>
+
+<!-- ── Chat Window ── -->
+<div id="chat-window">
+    <div id="chat-header">
+        <div class="avatar-wrap">
+            <div class="avatar">🤖</div>
+            <span class="online-dot"></span>
+        </div>
+        <div class="header-info">
+            <div class="header-name">CRM Assistant</div>
+            <div class="header-status">Online · Typically replies in seconds</div>
+        </div>
+        <button class="header-close" onclick="toggleChat()">✕</button>
+    </div>
+
+    <div class="date-divider"><span>Today</span></div>
+
+    <div id="chat-box"></div>
+
+    <div id="quick-replies">
+        <button class="quick-btn" onclick="sendQuick('How do I reset my password?')">Reset password</button>
+        <button class="quick-btn" onclick="sendQuick('I have a billing issue')">Billing issue</button>
+        <button class="quick-btn" onclick="sendQuick('Talk to an agent')">Talk to agent</button>
+    </div>
+
+    <div id="chat-input-area">
+        <input type="text" id="user-input" placeholder="Ask anything about your CRM..."
+            onkeypress="if(event.key==='Enter') sendMessage()">
+        <button id="send-btn" onclick="sendMessage()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="disclaimer">AI generated answers. Please verify important information.</div>
+</div>
+
 <script>
     const sentimentColors = {
-        positive: 'var(--positive)',
-        neutral: 'var(--neutral)',
-        negative: 'var(--negative)',
-        frustrated: 'var(--frustrated)'
+        positive: '#22c55e',
+        neutral: '#9ca3af',
+        negative: '#f59e0b',
+        frustrated: '#ef4444'
     };
 
+    function getTime() {
+        return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
     function toggleChat() {
-        const c = document.getElementById('chat-container');
-        c.style.display = (c.style.display === 'flex') ? 'none' : 'flex';
+        const w = document.getElementById('chat-window');
+        const isOpen = w.style.display === 'flex';
+        w.style.display = isOpen ? 'none' : 'flex';
+        if (!isOpen && document.getElementById('chat-box').children.length === 0) {
+            showWelcome();
+        }
+    }
+
+    function showWelcome() {
+        appendBot("Hi there! 👋 I'm your CRM Assistant. How can I help you today?", null, null);
+    }
+
+    function appendBot(text, intent, sentiment) {
+        const chatBox = document.getElementById('chat-box');
+        const color = sentimentColors[sentiment] || sentimentColors.neutral;
+        const tagHtml = intent && sentiment ? `
+            <div class="tag-row">
+                <span class="tag-dot" style="background:${color}"></span>
+                <span>${intent} · ${sentiment}</span>
+            </div>` : '';
+
+        chatBox.innerHTML += `
+            <div class="msg-group bot">
+                <div class="bot-avatar">🤖</div>
+                <div class="msg-content">
+                    <div class="bubble">${text}</div>
+                    <div class="msg-time">${getTime()}</div>
+                    ${tagHtml}
+                </div>
+            </div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function appendUser(text) {
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML += `
+            <div class="msg-group user">
+                <div class="msg-content">
+                    <div class="bubble">${text}</div>
+                    <div class="msg-time">${getTime()} ✓</div>
+                </div>
+            </div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     function showTyping() {
         const chatBox = document.getElementById('chat-box');
-        const typingEl = document.createElement('div');
-        typingEl.id = 'typing-indicator';
-        typingEl.innerHTML = `
+        const el = document.createElement('div');
+        el.id = 'typing-indicator';
+        el.className = 'typing-group';
+        el.innerHTML = `
+            <div class="bot-avatar">🤖</div>
             <div class="typing-bubble">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
             </div>`;
-        chatBox.appendChild(typingEl);
+        chatBox.appendChild(el);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
@@ -298,20 +638,18 @@
         if (el) el.remove();
     }
 
+    function sendQuick(text) {
+        document.getElementById('user-input').value = text;
+        sendMessage();
+    }
+
     function sendMessage() {
         const inputField = document.getElementById('user-input');
         const message = inputField.value.trim();
-        const chatBox = document.getElementById('chat-box');
-
         if (!message) return;
 
-        chatBox.innerHTML += `
-            <div class="msg-row user">
-                <div class="bubble">${message}</div>
-            </div>`;
+        appendUser(message);
         inputField.value = '';
-        chatBox.scrollTop = chatBox.scrollHeight;
-
         showTyping();
 
         fetch('/get_response', {
@@ -319,30 +657,14 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: message })
         })
-        .then(response => response.json())
+        .then(r => r.json())
         .then(data => {
             removeTyping();
-
-            const sentiment = data.sentiment || 'neutral';
-            const intent = data.intent || 'general';
-            const color = sentimentColors[sentiment] || sentimentColors.neutral;
-
-            chatBox.innerHTML += `
-                <div class="msg-row bot">
-                    <div class="bubble">${data.response}</div>
-                    <div class="tag-row">
-                        <span class="tag-dot" style="background:${color}"></span>
-                        <span>${intent} · ${sentiment}</span>
-                    </div>
-                </div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
+            appendBot(data.response, data.intent, data.sentiment);
         })
         .catch(() => {
             removeTyping();
-            chatBox.innerHTML += `
-                <div class="msg-row bot">
-                    <div class="bubble">Something went wrong. Please try again.</div>
-                </div>`;
+            appendBot("Our assistant is busy right now. Please try again in a moment.", null, null);
         });
     }
 </script>
