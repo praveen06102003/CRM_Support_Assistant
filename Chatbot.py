@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import requests
 import os
 import json
+import uuid
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,6 +14,9 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={GEMINI_API_KEY}"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+
+# NEW: in-memory store for conversation history, keyed by session_id
+conversation_store = {}
 
 SYSTEM_PROMPT = """You are an intelligent customer support assistant for a CRM platform.
 Your job is to help users with:
@@ -100,6 +104,26 @@ def classify_message(user_message):
         return {"intent": "general", "sentiment": "neutral"}
 
 
+# NEW: builds the prompt including recent conversation history
+def build_prompt_with_history(session_id, user_message):
+    history = conversation_store.get(session_id, [])
+
+    history_text = ""
+    for turn in history:
+        history_text += f"User: {turn['user']}\nAssistant: {turn['assistant']}\n"
+
+    full_prompt = f"{SYSTEM_PROMPT}\n\n{history_text}User: {user_message}\nAssistant:"
+    return full_prompt
+
+
+# NEW: saves the latest turn, keeps only last 5 turns per session
+def update_history(session_id, user_message, assistant_reply):
+    if session_id not in conversation_store:
+        conversation_store[session_id] = []
+    conversation_store[session_id].append({"user": user_message, "assistant": assistant_reply})
+    conversation_store[session_id] = conversation_store[session_id][-5:]
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -109,6 +133,10 @@ def index():
 def get_response():
     data = request.get_json()
     user_message = data.get('message')
+    session_id = data.get('session_id')  # NEW: comes from frontend
+
+    if not session_id:
+        session_id = str(uuid.uuid4())  # NEW: create one if missing
 
     classification = classify_message(user_message)
     intent = classification.get("intent", "general")
@@ -118,17 +146,20 @@ def get_response():
         return jsonify({
             "response": "I can see this is frustrating — let me connect you with a human agent right away.",
             "intent": intent,
-            "sentiment": sentiment
+            "sentiment": sentiment,
+            "session_id": session_id  # NEW
         })
 
-    full_prompt = f"{SYSTEM_PROMPT}\n\nUser: {user_message}\nAssistant:"
+    full_prompt = build_prompt_with_history(session_id, user_message)  # CHANGED
     reply = call_llm(full_prompt)
 
     if reply:
+        update_history(session_id, user_message, reply)  # NEW
         return jsonify({
             "response": reply,
             "intent": intent,
-            "sentiment": sentiment
+            "sentiment": sentiment,
+            "session_id": session_id  # NEW
         })
     else:
         return jsonify({"response": "Our assistant is busy right now, please try again in a moment."}), 500

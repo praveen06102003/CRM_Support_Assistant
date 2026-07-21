@@ -643,30 +643,37 @@
         sendMessage();
     }
 
-    function sendMessage() {
-        const inputField = document.getElementById('user-input');
-        const message = inputField.value.trim();
-        if (!message) return;
+    // NEW: generate one session_id when the page loads, reused for the whole conversation
+let sessionId = localStorage.getItem('crm_session_id');
+if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem('crm_session_id', sessionId);
+}
 
-        appendUser(message);
-        inputField.value = '';
-        showTyping();
+function sendMessage() {
+    const inputField = document.getElementById('user-input');
+    const message = inputField.value.trim();
+    if (!message) return;
 
-        fetch('/get_response', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: message })
-        })
-        .then(r => r.json())
-        .then(data => {
-            removeTyping();
-            appendBot(data.response, data.intent, data.sentiment);
-        })
-        .catch(() => {
-            removeTyping();
-            appendBot("Our assistant is busy right now. Please try again in a moment.", null, null);
-        });
-    }
+    appendUser(message);
+    inputField.value = '';
+    showTyping();
+
+    fetch('/get_response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: message, session_id: sessionId })  // CHANGED
+    })
+    .then(r => r.json())
+    .then(data => {
+        removeTyping();
+        appendBot(data.response, data.intent, data.sentiment);
+    })
+    .catch(() => {
+        removeTyping();
+        appendBot("Our assistant is busy right now. Please try again in a moment.", null, null);
+    });
+}
 </script>
 </body>
 </html>
